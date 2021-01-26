@@ -1,9 +1,15 @@
 
 const bodyParser = require ('body-parser')
 const express = require('express')
+const jwt = require('jsonwebtoken')
+const user = require('./models/user')
+const JWT_SECRET = require ('./fichiers/secret')
+const passport = require ('./fichiers/passport')
 const app = express()
 
+
 app.use(bodyParser.json())
+app.use(passport.initialize())
 //Access the controllers
 const controller = require('./controllers/user');
 
@@ -23,7 +29,7 @@ app.post('/createUser', (req, res) => {
 
     
 
-app.get('/testMdp', (req, res) => {
+app.get('/login', (req, res) => {
     // fetch user and test password verification
     User.findOne({ email: 'simard@gmail.com' }, function (err, user) {
         if (err) throw err;
@@ -40,13 +46,16 @@ app.get('/testMdp', (req, res) => {
             console.log('123Password:', isMatch); // -> 123Password: false
         });
     });
+    
+    const token = jwt.sign({email: user.email, password:user.password}, JWT_SECRET, { expiresIn: '1 week' })
 
-    res.send('Ca roule')
+    res.send(token)
 })
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+
+app.get('/', passport.authenticate('jwt'), function (req, res){
+    res.json(req.user)
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
