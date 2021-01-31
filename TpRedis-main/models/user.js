@@ -31,11 +31,16 @@ UserSchema.pre('save', function(next) {
     });
 });
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+UserSchema.methods.comparePassword = function (candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch);
     });
 };
+
+UserSchema.methods.comparePassword2 = function (password) {
+    console.log(password, this.password)
+    return bcrypt.compareSync(password, this.password);
+}
 
 module.exports = mongoose.model('User', UserSchema);
