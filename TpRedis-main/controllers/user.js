@@ -1,21 +1,19 @@
-function createUser(req, res) {
-    let User = require('../models/user');
-    let newUser = User ({
-        name: req.body.name,
-        surname : req.body.surname,
-        email : req.body.email,
-        password : req.body.password,
-    });
-  
-    newUser.save()
-    .then((savedUser) => {
+const User = require("../models/user");
 
-        //send back the created User
-        res.json(savedUser);
-            
-    }, (err) => {
-        res.status(400).json(err)
+function createUser(req, res) {
+    var user = new User({
+        name: req.body.name,
+        surname: req.body.surname,
+        email: req.body.email,
+        password: req.body.password
     });
+
+    // save user to database
+    user.save(function (err) {
+        if (err) throw err;
+    });
+
+    res.send('L utilisateur est bien enregistrer :)')
 }
 
 function readUsers(req, res) {
